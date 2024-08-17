@@ -1,0 +1,152 @@
+<div class="container">
+  <form (ngSubmit)="updateContent()">
+
+    <div class="form-group row">
+      <!-- Category Selection -->
+      <div class="col-md-6">
+        <label for="category">Select a category</label>
+        <select [(ngModel)]="categoryId" name="category" (change)="onCategoryChange()" class="form-control">
+          <option value="" disabled selected>Select a category</option>
+          <option *ngFor="let item of categoryList" [value]="item.id">
+            {{ item.category_name }}
+          </option>
+        </select>
+      </div>
+    
+      <!-- Service Selection -->
+      <div class="col-md-6" *ngIf="servicesList.length > 0">
+        <label for="services">Select a Service</label>
+        <select [(ngModel)]="masterServicesId" name="services" class="form-control">
+          <option value="" disabled selected>Select a Service</option>
+          <option *ngFor="let item of servicesList" [value]="item.master_service_id">
+            {{ item.name }}
+          </option>
+        </select>
+      </div>
+    </div>    
+
+    <!-- Overview Heading -->
+    <div>
+      <label for="heading">Overview Heading:</label>
+      <input type="text" id="heading" [(ngModel)]="heading" name="heading" class="form-control" />
+    </div>
+
+    <!-- Overview Paragraph -->
+    <div>
+      <label for="paragraph">Overview Paragraph:</label>
+      <textarea id="paragraph" [(ngModel)]="paragraph" name="paragraph" rows="2" class="form-control"></textarea>
+    </div>
+
+    <!-- Overview Items -->
+    <div *ngFor="let item of overview_items; let i = index" class="row">
+      <div class="col-md-6 col-6 py-3">
+        <label for="imageUrl{{ i }}">Overview Image URL:</label>
+        <input type="text" id="imageUrl{{ i }}" [(ngModel)]="item.imageUrl" name="imageUrl{{ i }}"
+          class="form-control" />
+
+        <label for="title{{ i }}" class="mt-2">Title:</label>
+        <input type="text" id="title{{ i }}" [(ngModel)]="item.title" name="title{{ i }}" class="form-control" />
+
+        <label for="description{{ i }}" class="mt-2">Description:</label>
+        <textarea id="description{{ i }}" [(ngModel)]="item.description" name="description{{ i }}" rows="2"
+          class="form-control"></textarea>
+
+        <button (click)="removeItem(i)" type="button" class="btn btn-danger mt-2 mr-2"
+          [disabled]="overview_items.length <= 1">Remove</button>
+        <button type="button" class="btn btn-primary mt-2 mr-2" (click)="addItem()"
+          [disabled]="overview_items.length >= 4">Add More</button>
+      </div>
+    </div>
+
+    <!-- Expert's Banner -->
+    <div>
+      <label for="experts">Expert's Banner URL:</label>
+      <input type="text" id="experts" [(ngModel)]="experts" name="experts" class="form-control" />
+    </div>
+
+    <!-- Tools and Equipment -->
+    <div class="toggle">
+      <button (click)="toggleToolsContent()" type="button" class="btn btn-primary">
+        {{ isToolsContentVisible ? 'Hide Tools and Equipment' : 'Show Tools and Equipment' }}
+      </button>
+
+      <div *ngIf="isToolsContentVisible">
+        <div *ngFor="let item of tools_images; let i = index" class="row mt-3">
+          <div class="col-md-6 col-6 py-3">
+            <label for="toolsImageUrl{{ i }}">Tools and Equipment Image URL {{ i + 1 }}:</label>
+            <input type="text" id="toolsImageUrl{{ i }}" [(ngModel)]="tools_images[i]" name="toolsImageUrl{{ i }}"
+              class="form-control" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Course Structure -->
+    <div class="toggle">
+      <button (click)="toggleCourseStructure()" type="button" class="btn btn-primary">
+        {{ isToolsCourseVisible ? 'Hide Course Structure' : 'Show Course Structure' }}
+      </button>
+
+      <div *ngIf="isToolsCourseVisible">
+        <div *ngFor="let day of procedureDays; let i = index" class="day-update-section">
+          <label for="dayTitle{{ i }}">Day Title:</label>
+          <input type="text" id="dayTitle{{ i }}" [(ngModel)]="day.title" name="dayTitle{{ i }}" class="form-control" />
+
+          <!-- Description -->
+          <div *ngFor="let point of day.description; let j = index">
+            <label for="heading{{ i }}_{{ j }}" class="mt-2">Heading:</label>
+            <input type="text" id="heading{{ i }}_{{ j }}" [(ngModel)]="point.heading" name="heading{{ i }}_{{ j }}"
+              class="form-control" />
+
+            <label for="pointDesc{{ i }}_{{ j }}" class="mt-2">Description:</label>
+            <textarea id="pointDesc{{ i }}_{{ j }}" [(ngModel)]="point.description" name="pointDesc{{ i }}_{{ j }}"
+              rows="2" class="form-control"></textarea>
+          </div>
+          <button type="button" class="btn btn-secondary mt-2" (click)="addPoint(i)">Add Point</button>
+
+          <label for="dayImages{{ i }}" class="mt-2">Image URLs (comma-separated):</label>
+          <input type="text" id="dayImages{{ i }}" [(ngModel)]="day.images" name="dayImages{{ i }}"
+            class="form-control" />
+          <hr />
+        </div>
+        <button type="button" class="btn btn-secondary mt-2" (click)="addProcedureDay()">Add Procedure Day</button>
+      </div>
+    </div>
+
+    <!-- Who Can Attend -->
+    <div class="toggle">
+      <button (click)="toggleWhoAttendsContent()" type="button" class="btn btn-primary">
+        {{ isWhoAttendsVisible ? 'Hide Who Can Attend' : 'Show Who Can Attend' }}
+      </button>
+
+      <div *ngIf="isWhoAttendsVisible">
+        <div class="form-group">
+          <label for="whoAttendsHeading">Heading:</label>
+          <input type="text" id="whoAttendsHeading" [(ngModel)]="whoAttends.heading" name="whoAttendsHeading"
+            class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label for="subPoint">Sub-Points:</label>
+          <div *ngFor="let point of whoAttends.subPoints; let i = index">
+            <input type="text" id="subPoint{{ i }}" [(ngModel)]="whoAttends.subPoints[i]" name="subPoint{{ i }}"
+              class="form-control mb-2" />
+          </div>
+          <button type="button" (click)="addSubPoint()" class="btn btn-secondary mt-2">Add Sub-Point</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certificate -->
+    <div>
+      <label for="certificate" class="mt-2">Certificate URLs (comma-separated):</label>
+      <input type="text" id="certificate" [(ngModel)]="certificate" name="certificate" class="form-control" />
+    </div>
+
+    <!-- Submit Button -->
+    <div>
+      <button type="submit" class="btn btn-success mt-3">Update Content</button>
+    </div>
+  </form>
+  <hr />
+</div>
